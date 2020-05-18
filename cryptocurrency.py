@@ -113,6 +113,7 @@ def mine_block():
     previous_proof = previous_block['proof']
     proof = blockchain.proof_of_work(previous_proof)
     previous_hash = blockchain.hash(previous_block)
+    blockchain.add_transaction(sender=node_address,reciver='dev',amount=1)
     block = blockchain.create_block(proof, previous_hash)
     response = {'message': 'Congratulations, you just mined a block!',
                 'index': block['index'],
@@ -138,7 +139,19 @@ def is_valid():
     else:
         response = {'message': 'Houston, we have a problem. The Blockchain is not valid.'}
     return jsonify(response), 200
+@app.route('/add_transaction', methods = ['POST'])
+def add_transaction():
+    json=request.get_json()
+    transaction_keys=['sender','reciver','transaction']
+    if not all (key in json for key in transaction_keys):
+        return 'something is missing ',400
+    index=blockchain.add_transaction(json['sender','reciver','amount'])
+    response={
+    'message':f'this transaction would be added to block {index}'
+    }
+
 
 # Running the app
 app.run(host = '0.0.0.0', port = 5000)
+
      
